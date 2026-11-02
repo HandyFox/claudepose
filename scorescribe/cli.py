@@ -142,7 +142,8 @@ def cmd_song(args):
         transcribe_song(args.audio, wd, output, model=args.model, api_key=args.api_key,
                         effort=None if args.effort == "default" else args.effort, passes=args.passes,
                         lyrics_text=_lyrics_arg(args), separate=not args.no_separate, whisper_model=args.whisper_model,
-                        language=args.language, shape_notes=args.shape_notes, title=args.title)
+                        language=args.language, shape_notes=args.shape_notes, title=args.title,
+                        satb=args.satb, satb_chords=args.satb_chords)
     except QuotaExhausted as e:
         print(f"\nPAUSED: {e}\nRun the same command again later; the audio analysis is kept.")
         sys.exit(3)
@@ -152,7 +153,8 @@ def cmd_song_prepare(args):
     from .song.run import prepare
     wd = _work_dir(args, [args.audio])
     prepare(args.audio, wd, lyrics_text=_lyrics_arg(args), separate=not args.no_separate,
-            whisper_model=args.whisper_model, language=args.language, shape_notes=args.shape_notes, title=args.title)
+            whisper_model=args.whisper_model, language=args.language, shape_notes=args.shape_notes, title=args.title,
+            satb=args.satb, satb_chords=args.satb_chords)
     print(f"\nReady. Open this folder in Claude Code (or Codex):\n  {Path(wd).resolve()}\n"
           "and say: Make the lead sheet.   (instructions are in CLAUDE.md / AGENTS.md)")
 
@@ -257,6 +259,9 @@ def main(argv=None):
         p.add_argument("--whisper-model", default="small", help="Whisper size: tiny, base, small (default), medium, large-v3")
         p.add_argument("--language", help="lyrics language code, e.g. en (default: detect)")
         p.add_argument("--shape-notes", choices=["aiken", "4shape"], help="shape-note heads in the output")
+        p.add_argument("--satb", action="store_true",
+                       help="also arrange the song for four-part choir (Claude writes alto, tenor and bass)")
+        p.add_argument("--satb-chords", action="store_true", help="print chord symbols above the four-part score too")
         p.add_argument("-w", "--workdir", help="work folder (default: <output>_work)")
 
     sg = sub.add_parser("song", help="recording -> lead sheet (melody, lyrics, chords) using an API key")

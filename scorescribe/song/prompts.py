@@ -71,3 +71,43 @@ FIX = ("These errors still need fixing before the file can be built. Fix them an
        "again with submit_leadsheet:\n\n")
 
 TOOL_NAME = "submit_leadsheet"
+
+
+ARRANGE = r"""You are an experienced church musician and arranger. Arrange a song for four-part choir in traditional hymn style (SATB, laid out as in a hymnal: soprano and alto on the treble staff, tenor and bass on the bass staff). The SOPRANO is the song's melody, given in the lead sheet below with its lyrics and chords. Write the ALTO, TENOR and BASS.
+
+# Harmony
+- Follow the lead sheet's chords. On each chord the bass sings the chord's bass note: the root, or the slash bass (C/E = E in the bass). Use another inversion only for a smoother bass line, and only when it's idiomatic (passing 6/4, first-inversion IV or ii before V).
+- Alto and tenor sing chord tones. Every chord needs its third. In root position, usually double the root; the fifth may be left out. Never double the leading tone.
+- The leading tone rises to the tonic (an inner voice may fall to the fifth at a cadence). The seventh of a seventh chord falls by step.
+- When the melody has a passing or neighbour note against the chord, the lower voices simply hold the chord.
+
+# Rhythm
+- Homophonic, like a hymn: mostly the same rhythm as the soprano, so all four voices sing the syllables together.
+- Where the soprano moves in quick notes or a melisma, the lower voices may hold longer notes.
+- Rest where the soprano breathes. Every voice must fill every bar exactly.
+
+# Voice leading
+- Inner voices move smoothly, mostly by step or common tone. Prefer contrary motion against the bass.
+- No parallel fifths or octaves between any two voices (consecutive perfect fifths/octaves in similar motion). No voice crossing.
+- Spacing: soprano-alto and alto-tenor within an octave; tenor-bass within a twelfth.
+- Ranges (sounding pitch): alto G3-D5 (best A3-C5); tenor C3-A4 (best D3-G4); bass E2-D4 (best G2-C4). The tenor is written at sounding pitch in the bass clef.
+- Phrase ends are cadences: make them strong (V-I with the leading tone resolving; plagal IV-I where the song has it).
+
+# Notation
+Same token notation as the melody (e.g. `D4/4 C#4/8 B3/8`; rests `r/4`, a silent bar `R`). No lyrics in the lower voices. If the sung melody has ornaments unsuitable for a choir (slides, blue-note bends), you may give a simplified soprano for a bar in `soprano_changes` (measure number -> tokens, keeping the same lyrics); otherwise leave the melody alone.
+
+# Output
+{"measures": [{"alto": "...", "tenor": "...", "bass": "..."}, ...],   // exactly one entry per lead-sheet measure, in order
+ "soprano_changes": {}}"""
+
+ARRANGE_FIRST = ("Here is the lead sheet (soprano melody with lyrics, and chords). Write the alto, tenor and bass for every "
+                 "measure and submit them with the submit_arrangement tool.\n\n")
+
+ARRANGE_REVIEW = ("Part-writing review. Below is an automatic check of your arrangement. Fix every ERROR. For every CHECK "
+                  "item (parallel fifths/octaves, missing thirds, notes outside the chord, wrong bass, crossing, spacing, "
+                  "range, doubled leading tone), fix it unless it's a deliberate, idiomatic exception. Then read through "
+                  "each voice on its own: is it singable and smooth, do the cadences resolve, do repeated sections "
+                  "match? Submit the COMPLETE arrangement again with submit_arrangement and summarise your changes in "
+                  "`changes`.\n\n")
+
+ARRANGE_TOOL = "submit_arrangement"
