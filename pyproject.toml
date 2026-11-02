@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "scorescribe"
+version = "0.7.0"
+description = "Sheet music OCR powered by Claude, exporting MusicXML for MuseScore"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+dependencies = [
+  "anthropic>=0.70",
+  "music21>=9.1",
+  "numpy",
+  "opencv-python-headless",
+  "pillow",
+  "pypdfium2",
+  "flask",
+  "verovio>=4",
+  "resvg-py>=0.5",
+  "google-genai>=1.50",
+]
+
+[project.optional-dependencies]
+# songs from recordings (install torch first; see README): librosa analysis, Whisper lyrics, Demucs separation
+audio = ["librosa>=0.10", "soundfile", "faster-whisper>=1.0", "demucs>=4.0"]
+# kept so the old install command still works; proofreading deps are now standard
+proofread = []
+
+[project.scripts]
+scorescribe = "scorescribe.cli:main"
+
+[tool.setuptools]
+packages = ["scorescribe"]
