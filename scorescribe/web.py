@@ -18,7 +18,7 @@ CONFIG = HOME / "config.json"
 JOBS: dict[str, dict] = {}
 app = Flask(__name__)
 SETTINGS = ("parts", "staves_per_system", "model", "effort", "workers", "accuracy", "zoom", "proofread",
-            "mark_uncertain", "shape_notes", "lyrics", "title", "separate")
+            "mark_uncertain", "shape_notes", "lyrics", "title", "separate", "satb", "satb_chords")
 AUDIO_EXT = {".mp3", ".wav", ".m4a", ".aac", ".flac", ".ogg", ".oga", ".opus", ".wma", ".aif", ".aiff", ".mp4", ".webm"}
 
 
@@ -155,7 +155,8 @@ def _launch(jid: str, meta: dict, key: str | None, resumed: bool = False):
                 from .song import run as song
                 opts = dict(lyrics_text=(settings.get("lyrics") or "").strip() or None,
                             separate=settings.get("separate") != "off", shape_notes=settings.get("shape_notes") or None,
-                            title=(settings.get("title") or "").strip() or None)
+                            title=(settings.get("title") or "").strip() or None,
+                            satb=settings.get("satb") == "on", satb_chords=settings.get("satb_chords") == "on")
                 if mode == "song-agent":
                     song.prepare(inputs[0], str(d), stem=stem, log=log, **opts)
                     job["result"] = {"agent": (settings.get("model") or "agent:claude").split(":", 1)[1],
@@ -366,6 +367,8 @@ small{color:var(--muted)}
     <label>Song title (optional)</label><input type="text" name="title" placeholder="e.g. Amazing Grace">
     <label>Lyrics (optional, makes the words exact)</label><textarea name="lyrics" rows="5" style="width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:4px;background:var(--paper);color:var(--ink);font:inherit" placeholder="Paste the lyrics here if you have them"></textarea>
     <div class="check"><input type="checkbox" id="sepchk" checked onchange="document.getElementById('sepval').value=this.checked?'on':'off'"><label for="sepchk" style="margin:0;text-transform:none;letter-spacing:0;font-size:14px">Separate the voice from the band first (slower, much better melody)</label><input type="hidden" name="separate" id="sepval" value="on"></div>
+    <div class="check"><input type="checkbox" name="satb" id="satbchk"><label for="satbchk" style="margin:0;text-transform:none;letter-spacing:0;font-size:14px">Four-part harmony (SATB): Claude arranges alto, tenor and bass in hymn style under the melody</label></div>
+    <div class="check" style="margin-left:24px"><input type="checkbox" name="satb_chords" id="satbcc"><label for="satbcc" style="margin:0;text-transform:none;letter-spacing:0;font-size:14px">Also print chord symbols above the four-part score</label></div>
   </div>
   <div class="row">
     <div><label>Instruments (optional)</label><input type="text" name="parts" placeholder="Piano:2  or  S,A,T,B"></div>
@@ -487,7 +490,8 @@ async function poll(id,n){
   if(j.mode=='segment'){st.textContent='Split ready — check the boxes below.';st.className='status done';return}
   st.textContent=`Done: ${r.measures} measures.`;st.className='status done';
   if(r.song){
-    res.innerHTML=`<a class="big" href="/file/${id}/${encodeURIComponent(j.stem)}.musicxml?dl=1">Download lead sheet (MusicXML)</a>
+    res.innerHTML=`<a class="big" href="/file/${id}/${encodeURIComponent(j.stem)}.musicxml?dl=1">${r.satb?'Download four-part score (MusicXML)':'Download lead sheet (MusicXML)'}</a>
+     ${r.satb?`&nbsp; <a href="/file/${id}/${encodeURIComponent(j.stem)}_leadsheet.musicxml?dl=1">lead sheet</a>`:''}
      &nbsp; <a href="/file/${id}/chords.txt" target="_blank">chord chart</a> &nbsp; <a href="/file/${id}/report.md" target="_blank">report</a>
      <p><small>Chords fitting the audio: ${r.stats.chords_fitting} &middot; melody notes matching the singing: ${r.stats.melody_matching}</small></p>
      ${(r.orange||[]).length?`<p>Worth a listen (unsure): measures ${r.orange.join(', ')}</p>`:''}

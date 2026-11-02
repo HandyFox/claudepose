@@ -60,6 +60,15 @@ Drop an mp3/wav/m4a/flac into the app (or run `scorescribe song-prepare song.mp3
 
 This works with an API key (Claude or Gemini, fully automatic) or with your **subscription**. Choose *My Claude Pro/Max plan* as the reader, open the folder in Claude Code, and say **"Make the lead sheet"**; it runs the same passes using `song-check` and `song-build`.
 
+**Four-part harmony (SATB).** Tick *Four-part harmony* in the app (or add `--satb`) and Claude also arranges the song for choir in hymn style: soprano (the sung melody, with the lyrics), alto, tenor and bass, on two staves like a hymnal. The part-writing is checked by code:
+
+- ranges, and rhythms that add up
+- every note in its chord, the bass on the chord's bass note, and the third present in every chord
+- no voice crossing, and no gaps that are too wide
+- no parallel fifths or octaves, and no doubled leading tone
+
+Claude then does a part-writing review pass. You get `song.musicxml` (the four-part score), `song_leadsheet.musicxml` (melody, lyrics and chords) and `chords.txt`. Chord symbols are left off the hymn score unless you tick *Also print chord symbols*. Shape notes work here too. This is an *arrangement* in hymn style built on the chords that were found, not a transcription of what a choir on the recording sang.
+
 **Install (on the server):**
 
 ```bash
@@ -221,7 +230,8 @@ scorescribe/
   gemini.py     Google Gemini reader (structured JSON output, rate-limit waits, daily-quota pause)
   agent.py      subscription mode: prepares CLAUDE.md/AGENTS.md jobs for Claude Code / Codex, and checks their work
   song/         recordings -> lead sheets: analyze.py (Demucs, librosa, Whisper), leadsheet.py (format, checks
-                against the audio, MusicXML with chord symbols, chord chart), prompts.py, run.py (passes)
+                against the audio, MusicXML with chord symbols, chord chart), satb.py (four-part arrangement + part-writing
+                checks), prompts.py, run.py (passes)
   web.py, cli.py
 tests/          round-trip tests, a mocked pipeline, fake Claude/Gemini servers, a synthesized test song
 ```
